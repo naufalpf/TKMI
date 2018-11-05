@@ -19,6 +19,7 @@
 14. ctrl+c (keluar dari psql)
 
 Cara 1 using osm2pgrouting
+
 15. download mapconfig.xml di https://github.com/pgRouting/osm2pgrouting-build/blob/master/mapconfig.xml, taroh di folder yang sama kayak osmnya
 16. "osm2pgrouting --f surabaya.osm --conf mapconfig.xml --dbname db_clearroute --username postgres --password <password> --clean"
 17. tungguin
@@ -27,6 +28,7 @@ Cara 1 using osm2pgrouting
 20. testing "SELECT name FROM ways;"
 21. selamat, anda mendapatkan semua nama jalan
 22. jalanin
+
 ALTER TABLE configuration ADD COLUMN penalty FLOAT;
 UPDATE configuration SET penalty=1.0;
 UPDATE configuration SET penalty=2.0 WHERE tag_id = 112;
