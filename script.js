@@ -172,6 +172,7 @@ var map = new ol.Map({
       source: new ol.source.OSM()
     }),
     vectorLayer,
+    vectorLayer1,
   ],
   target: 'map',
   controls: ol.control.defaults({
@@ -184,25 +185,27 @@ var map = new ol.Map({
     zoom: 12
   })
 });
+function execute(){
   //vectorLayer.getSource().clear();
   if(vectorLayer.getSource()){
     vectorLayer.getSource().clear();
   }
-  // // if(vectorLayer1.getSource()){
-  // //   vectorLayer1.getSource().clear();
-  // }
+  if(vectorLayer1.getSource()){
+    vectorLayer1.getSource().clear();
+  }
   var format = new ol.format.GeoJSON({
   featureProjection:"EPSG:3857"
   });
   var done= new Promise(function(resolve,reject){
-      // var elements=document.forms.lembar.getElementsByTagName('input');
+      var elements=document.forms.lembar.getElementsByTagName('input');
       var oReq = new XMLHttpRequest();
       oReq.onload = reqListener;
-      var url="http://localhost/tkmi/cek.php"
+      var url="http://localhost/tkmi/find.php?x1="+elements[0].value+"&y1="+elements[1].value+"&x2="+elements[2].value+"&y2="+elements[3].value;
       oReq.open("GET",url, true);
       oReq.send();
       console.log(url);
       function reqListener(e) {
+          console.log(this.responseText)
           geojsonObject = JSON.parse(this.responseText);
           resolve(geojsonObject);
       }
@@ -211,8 +214,8 @@ var map = new ol.Map({
   done.then((geojsonObject)=>{
     console.log(geojsonObject);
     //console.log(vectorLayer.getSource());
-    vectorLayer.getSource().addFeatures(format.readFeatures(geojsonObject));
-    // vectorLayer1.getSource().addFeatures(format.readFeatures(geojsonObject.dijkstra));
+    vectorLayer.getSource().addFeatures(format.readFeatures(geojsonObject.astar));
+    vectorLayer1.getSource().addFeatures(format.readFeatures(geojsonObject.dijkstra));
     //console.log(vectorLayer.getSource());
     // var vectorSource = new ol.source.Vector({
     //   features: (new ol.format.GeoJSON()).readFeatures(geojsonObject)
@@ -223,4 +226,5 @@ var map = new ol.Map({
   }).catch((error)=>{
     console.log(error);
   });
-   
+  return false; 
+}

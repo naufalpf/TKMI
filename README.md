@@ -19,16 +19,14 @@
 14. ctrl+c (keluar dari psql)
 
 Cara 1 using osm2pgrouting
-
 15. download mapconfig.xml di https://github.com/pgRouting/osm2pgrouting-build/blob/master/mapconfig.xml, taroh di folder yang sama kayak osmnya
-16. "osm2pgrouting --f surabaya.osm --conf mapconfig.xml --dbname db_clearroute --username postgres --password <password> --clean"
+16. "osm2pgrouting --f surabaya.osm --conf mapconfig.xml --dbname db_clearroute --username postgres --password n --clean"
 17. tungguin
 18. "psql db_clearroute postgres"
 19. masukin password
 20. testing "SELECT name FROM ways;"
 21. selamat, anda mendapatkan semua nama jalan
 22. jalanin
-
 ALTER TABLE configuration ADD COLUMN penalty FLOAT;
 UPDATE configuration SET penalty=1.0;
 UPDATE configuration SET penalty=2.0 WHERE tag_id = 112;
@@ -74,3 +72,30 @@ itu contoh kodingannya
 27.https://gist.github.com/rezkyal/26a0383e91195ec9dde764549918ea53 (save as script.js)
 https://gist.github.com/rezkyal/743ab3fcf64b554a34730906e5be5937(save as index.php)
 
+27,1. 
+CREATE TABLE backup_ways AS TABLE ways;
+27,2.
+ALTER TABLE backup_ways ADD cost_clearroute DOUBLE PRECISION;
+
+28. Fungsi updateCostFix
+CREATE OR REPLACE FUNCTION
+updateCostFix(i INTEGER) RETURNS INTEGER AS $$
+
+DECLARE
+	sql_gid text;
+	rec record;
+BEGIN
+	sql_gid := 'SELECT * FROM backup_ways';
+	FOR rec IN EXECUTE sql_gid
+		LOOP
+			EXECUTE 'UPDATE backup_ways SET cost_clearroute = (SELECT cost_s FROM backup_ways WHERE gid = '||rec.gid||') WHERE gid = '||rec.gid||'';
+			RAISE NOTICE 'Inserting %', rec.gid;
+		END LOOP;
+	RETURN i+1;
+
+END;
+$$
+language plpgsql volatile STRICT;
+
+29. Jalankan SELECT updateCostFix(1);
+30. intip.in/osmSIG, taro di htdocs jalankan xampp untuk webnya
