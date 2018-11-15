@@ -18,10 +18,12 @@
 13. "CREATE EXTENSION pgRouting;"
 14. ctrl+c (keluar dari psql)
 
-Cara 1 using osm2pgrouting
 15. download mapconfig.xml di https://github.com/pgRouting/osm2pgrouting-build/blob/master/mapconfig.xml, taroh di folder yang sama kayak osmnya
+
 16. "osm2pgrouting --f surabaya.osm --conf mapconfig.xml --dbname db_clearroute --username postgres --password n --clean"
-17. tungguin
+
+17. tunggu
+
 18. "psql db_clearroute postgres"
 19. masukin password
 20. testing "SELECT name FROM ways;"
